@@ -5,29 +5,47 @@ import { connect } from 'react-redux';
 import * as routes from '../../constants/routes';
 import SignOutButton from '../SignOut';
 
-const Navigation = ({ authUser }) =>
-  <div>
-    { authUser
-        ? <NavigationAuth />
-        : <NavigationNonAuth />
-    }
-  </div>
+const Navigation = ({ authUser }) => (
+  <div>{authUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>
+);
 
-const NavigationAuth = () =>
+const NavigationAuth = () => (
   <ul>
-    <li><Link href={routes.LANDING}><a>Landing</a></Link></li>
-    <li><Link href={routes.HOME}><a>Home</a></Link></li>
-    <li><Link href={routes.ACCOUNT}><a>Account</a></Link></li>
-    <li><SignOutButton /></li>
+    <p>
+      <Link href={routes.LANDING}>
+        <a>Landing</a>
+      </Link>
+    </p>
+    <p>
+      <Link href={routes.HOME}>
+        <a>Home</a>
+      </Link>
+    </p>
+    <p>
+      <Link href={routes.ACCOUNT}>
+        <a>Account</a>
+      </Link>
+    </p>
+    <SignOutButton />
   </ul>
+);
 
-const NavigationNonAuth = () =>
+const NavigationNonAuth = () => (
   <ul>
-    <li><Link href={routes.LANDING}><a>Landing</a></Link></li>
-    <li><Link href={routes.SIGN_IN}><a>Sign In</a></Link></li>
+    <p>
+      <Link href={routes.LANDING}>
+        <a>Landing</a>
+      </Link>
+    </p>
+    <p>
+      <Link href={routes.SIGN_IN}>
+        <a>Sign In</a>
+      </Link>
+    </p>
   </ul>
+);
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
 });
 

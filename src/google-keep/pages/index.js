@@ -1,14 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { AppWithAuthentication } from "../src/components/App";
+import { AppWithAuthentication } from '../src/components/App';
+import Title from '../src/components/Styles/Title';
 
 const LandingPage = () => (
-  <AppWithAuthentication>
-    <h1>Landing</h1>
-    <p>
-      The Landing Page is open to everyone, even though the user isn't signed
-      in.
-    </p>
-  </AppWithAuthentication>
+	<AppWithAuthentication>
+		<Title>Google Keep</Title>
+		<p>Welcome!</p>
+	</AppWithAuthentication>
 );
 export default LandingPage;

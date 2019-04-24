@@ -1,15 +1,16 @@
-import React, { Component } from "react";
-import Router from "next/router";
+import React, { Component } from 'react';
+import Router from 'next/router';
 
-import { SignUpLink } from "./signup";
-import { PasswordForgetLink } from "./pw-forget";
-import { AppWithAuthentication } from "../src/components/App";
-import { auth } from "../src/firebase";
-import * as routes from "../src/constants/routes";
+import { SignUpLink } from './signup';
+import { PasswordForgetLink } from './pw-forget';
+import { AppWithAuthentication } from '../src/components/App';
+import { auth } from '../src/firebase';
+import * as routes from '../src/constants/routes';
+import Title from '../src/components/Styles/Title';
 
 const SignInPage = () => (
   <AppWithAuthentication>
-    <h1>SignIn</h1>
+    <Title>SignIn</Title>
     <SignInForm />
     <PasswordForgetLink />
     <SignUpLink />
@@ -17,13 +18,13 @@ const SignInPage = () => (
 );
 
 const updateByPropertyName = (propertyName, value) => () => ({
-  [propertyName]: value
+  [propertyName]: value,
 });
 
 const INITIAL_STATE = {
-  email: "",
-  password: "",
-  error: null
+  email: '',
+  password: '',
+  error: null,
 };
 
 class SignInForm extends Component {
@@ -43,7 +44,7 @@ class SignInForm extends Component {
         Router.push(routes.HOME);
       })
       .catch(error => {
-        this.setState(updateByPropertyName("error", error));
+        this.setState(updateByPropertyName('error', error));
       });
 
     event.preventDefault();
@@ -52,14 +53,14 @@ class SignInForm extends Component {
   render() {
     const { email, password, error } = this.state;
 
-    const isInvalid = password === "" || email === "";
+    const isInvalid = password === '' || email === '';
 
     return (
       <form onSubmit={this.onSubmit}>
         <input
           value={email}
           onChange={event =>
-            this.setState(updateByPropertyName("email", event.target.value))
+            this.setState(updateByPropertyName('email', event.target.value))
           }
           type="text"
           placeholder="Email Address"
@@ -67,7 +68,7 @@ class SignInForm extends Component {
         <input
           value={password}
           onChange={event =>
-            this.setState(updateByPropertyName("password", event.target.value))
+            this.setState(updateByPropertyName('password', event.target.value))
           }
           type="password"
           placeholder="Password"
