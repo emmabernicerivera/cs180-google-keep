@@ -1,50 +1,37 @@
-[![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/zeit/next.js/tree/master/examples/with-styled-components)
+# nextjs-redux-firebase-authentication
 
-# Example app with styled-components
+[![Build Status](https://travis-ci.org/taming-the-state-in-react/nextjs-redux-firebase-authentication.svg?branch=master)](https://travis-ci.org/taming-the-state-in-react/nextjs-redux-firebase-authentication) [![Slack](https://slack-the-road-to-learn-react.wieruch.com/badge.svg)](https://slack-the-road-to-learn-react.wieruch.com/) [![Greenkeeper badge](https://badges.greenkeeper.io/taming-the-state-in-react/nextjs-redux-firebase-authentication.svg)](https://greenkeeper.io/)
 
-## How to use
+* Found in [Taming the State in React](https://roadtoreact.com/course-details?courseId=TAMING_THE_STATE)
+* [Live](https://react-firebase-authentication.wieruch.com/)
+* [Tutorial](https://www.robinwieruch.de/complete-firebase-authentication-react-tutorial/)
 
-### Using `create-next-app`
+## Features
 
-Execute [`create-next-app`](https://github.com/segmentio/create-next-app) with [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) or [npx](https://github.com/zkat/npx#readme) to bootstrap the example:
+* uses:
+  * React + NextJs
+  * firebase 4.3.1
+  * redux
+* features:
+  * Sign In
+  * Sign Up
+  * Sign Out
+  * Password Forget
+  * Password Change
+  * Protected Routes with Authorization
+  * Database: Users
 
-```bash
-npx create-next-app --example with-styled-components with-styled-components-app
-# or
-yarn create next-app --example with-styled-components with-styled-components-app
-```
+## Installation
 
-### Download manually
+* `git clone git@github.com:taming-the-state-in-react/nextjs-redux-firebase-authentication.git`
+* `cd nextjs-redux-firebase-authentication`
+* `npm install`
+* `npm run dev`
+* visit http://localhost:3000/
+* Use your own Firebase Credentials
 
-Download the example:
+### Use your own Firebase Credentials
 
-```bash
-curl https://codeload.github.com/zeit/next.js/tar.gz/canary | tar -xz --strip=2 next.js-canary/examples/with-styled-components
-cd with-styled-components
-```
-
-Install it and run:
-
-```bash
-npm install
-npm run dev
-# or
-yarn
-yarn dev
-```
-
-Deploy it to the cloud with [now](https://zeit.co/now) ([download](https://zeit.co/download))
-
-```bash
-now
-```
-
-### Try it on CodeSandbox
-
-[Open this example on CodeSandbox](https://codesandbox.io/s/github/zeit/next.js/tree/canary/examples/with-styled-components)
-
-## The idea behind the example
-
-This example features how you use a different styling solution than [styled-jsx](https://github.com/zeit/styled-jsx) that also supports universal styles. That means we can serve the required styles for the first render within the HTML and then load the rest in the client. In this case we are using [styled-components](https://github.com/styled-components/styled-components).
-
-For this purpose we are extending the `<Document />` and injecting the server side rendered styles into the `<head>`, and also adding the `babel-plugin-styled-components`. (which is required for server side rendering)
+* visit https://firebase.google.com/ and create a Firebase App
+* copy and paste your Credentials from your Firebase App into src/firebase/firebase.js
+* activate Email/Password Sign-In Method in your Firebase App

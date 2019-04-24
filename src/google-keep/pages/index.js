@@ -1,9 +1,14 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
 
-const Title = styled.h1`
-  color: red;
-  font-size: 50px;
-`
+import { AppWithAuthentication } from "../src/components/App";
 
-export default () => <Title>My page</Title>
+const LandingPage = () => (
+  <AppWithAuthentication>
+    <h1>Landing</h1>
+    <p>
+      The Landing Page is open to everyone, even though the user isn't signed
+      in.
+    </p>
+  </AppWithAuthentication>
+);
+export default LandingPage;
