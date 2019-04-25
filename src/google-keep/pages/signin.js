@@ -1,16 +1,50 @@
 import React, { Component } from 'react';
 import Router from 'next/router';
+import styled from 'styled-components';
 
 import { SignUpLink } from './signup';
 import { PasswordForgetLink } from './pw-forget';
 import { AppWithAuthentication } from '../src/components/App';
 import { auth } from '../src/firebase';
 import * as routes from '../src/constants/routes';
-import Title from '../src/components/Styles/Title';
+import Title from '../src/components/Styled/Title';
+
+const Input = styled.input`
+  border: 1px solid ${({ theme }) => theme.lightgrey};
+  border-radius: 5px;
+  outline: none;
+  display: block;
+  margin-bottom: 10px;
+  padding: 10px;
+
+  width: 100%;
+  font-size: 16px;
+`;
+
+const Submit = styled.button`
+  display: block;
+  margin: 0 auto;
+  width: 110%;
+  padding: 10px;
+  border: 0;
+  border-radius: 5px;
+  outline: none;
+
+  background: #00e676;
+  transition: 0.2s all ease-in;
+  color: white;
+  font-size: 16px;
+
+  cursor: pointer;
+
+  &:disabled {
+    background: #43a047;
+  }
+`;
 
 const SignInPage = () => (
   <AppWithAuthentication>
-    <Title>SignIn</Title>
+    <Title>Sign In</Title>
     <SignInForm />
     <PasswordForgetLink />
     <SignUpLink />
@@ -57,7 +91,7 @@ class SignInForm extends Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
+        <Input
           value={email}
           onChange={event =>
             this.setState(updateByPropertyName('email', event.target.value))
@@ -65,7 +99,7 @@ class SignInForm extends Component {
           type="text"
           placeholder="Email Address"
         />
-        <input
+        <Input
           value={password}
           onChange={event =>
             this.setState(updateByPropertyName('password', event.target.value))
@@ -73,9 +107,9 @@ class SignInForm extends Component {
           type="password"
           placeholder="Password"
         />
-        <button disabled={isInvalid} type="submit">
+        <Submit disabled={isInvalid} type="submit">
           Sign In
-        </button>
+        </Submit>
 
         {error && <p>{error.message}</p>}
       </form>

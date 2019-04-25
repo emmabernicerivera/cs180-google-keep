@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { AppWithAuthentication } from '../src/components/App';
-import Title from '../src/components/Styles/Title';
+import Title from '../src/components/Styled/Title';
 
 const LandingPage = () => (
 	<AppWithAuthentication>
