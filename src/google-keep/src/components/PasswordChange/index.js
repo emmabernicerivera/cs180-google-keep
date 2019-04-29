@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
 import { auth } from '../../firebase';
+import Input from '../Styled/Input';
+import Submit from '../Styled/Submit';
 
 const updateByPropertyName = (propertyName, value) => () => ({
   [propertyName]: value,
@@ -19,10 +21,11 @@ class PasswordChangeForm extends Component {
     this.state = { ...INITIAL_STATE };
   }
 
-  onSubmit = (event) => {
+  onSubmit = event => {
     const { passwordOne } = this.state;
 
-    auth.doPasswordUpdate(passwordOne)
+    auth
+      .doPasswordUpdate(passwordOne)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
       })
@@ -31,38 +34,40 @@ class PasswordChangeForm extends Component {
       });
 
     event.preventDefault();
-  }
+  };
 
   render() {
-    const {
-      passwordOne,
-      passwordTwo,
-      error,
-    } = this.state;
+    const { passwordOne, passwordTwo, error } = this.state;
 
-    const isInvalid =
-      passwordOne !== passwordTwo ||
-      passwordOne === '';
+    const isInvalid = passwordOne !== passwordTwo || passwordOne === '';
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
+        <Input
           value={passwordOne}
-          onChange={event => this.setState(updateByPropertyName('passwordOne', event.target.value))}
+          onChange={event =>
+            this.setState(
+              updateByPropertyName('passwordOne', event.target.value)
+            )
+          }
           type="password"
           placeholder="New Password"
         />
-        <input
+        <Input
           value={passwordTwo}
-          onChange={event => this.setState(updateByPropertyName('passwordTwo', event.target.value))}
+          onChange={event =>
+            this.setState(
+              updateByPropertyName('passwordTwo', event.target.value)
+            )
+          }
           type="password"
           placeholder="Confirm New Password"
         />
-        <button disabled={isInvalid} type="submit">
+        <Submit disabled={isInvalid} type="submit">
           Reset My Password
-        </button>
+        </Submit>
 
-        { error && <p>{error.message}</p> }
+        {error && <p>{error.message}</p>}
       </form>
     );
   }

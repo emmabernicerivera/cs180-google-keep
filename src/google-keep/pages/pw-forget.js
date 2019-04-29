@@ -1,24 +1,31 @@
-import React, { Component } from "react";
-import Link from "next/link";
+import React, { Component } from 'react';
+import Link from 'next/link';
+import styled from 'styled-components';
 
-import { AppWithAuthentication } from "../src/components/App";
-import * as routes from "../src/constants/routes";
-import { auth } from "../src/firebase";
+import { AppWithAuthentication } from '../src/components/App';
+import * as routes from '../src/constants/routes';
+import { auth } from '../src/firebase';
+import Input from '../src/components/Styled/Input';
+import Submit from '../src/components/Styled/Submit';
+
+const ForgetSubmit = styled(Submit)`
+  margin-bottom: 10px;
+`;
 
 const PasswordForgetPage = () => (
   <AppWithAuthentication>
-    <h1>PasswordForget</h1>
+    <h1>Password Forget</h1>
     <PasswordForgetForm />
   </AppWithAuthentication>
 );
 
 const updateByPropertyName = (propertyName, value) => () => ({
-  [propertyName]: value
+  [propertyName]: value,
 });
 
 const INITIAL_STATE = {
-  email: "",
-  error: null
+  email: '',
+  error: null,
 };
 
 class PasswordForgetForm extends Component {
@@ -37,7 +44,7 @@ class PasswordForgetForm extends Component {
         this.setState(() => ({ ...INITIAL_STATE }));
       })
       .catch(error => {
-        this.setState(updateByPropertyName("error", error));
+        this.setState(updateByPropertyName('error', error));
       });
 
     event.preventDefault();
@@ -46,21 +53,21 @@ class PasswordForgetForm extends Component {
   render() {
     const { email, error } = this.state;
 
-    const isInvalid = email === "";
+    const isInvalid = email === '';
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
+        <Input
           value={this.state.email}
           onChange={event =>
-            this.setState(updateByPropertyName("email", event.target.value))
+            this.setState(updateByPropertyName('email', event.target.value))
           }
           type="text"
           placeholder="Email Address"
         />
-        <button disabled={isInvalid} type="submit">
+        <ForgetSubmit disabled={isInvalid} type="submit">
           Reset My Password
-        </button>
+        </ForgetSubmit>
 
         {error && <p>{error.message}</p>}
       </form>

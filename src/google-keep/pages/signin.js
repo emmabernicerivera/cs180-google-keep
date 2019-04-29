@@ -8,39 +8,8 @@ import { AppWithAuthentication } from '../src/components/App';
 import { auth } from '../src/firebase';
 import * as routes from '../src/constants/routes';
 import Title from '../src/components/Styled/Title';
-
-const Input = styled.input`
-  border: 1px solid ${({ theme }) => theme.lightgrey};
-  border-radius: 5px;
-  outline: none;
-  display: block;
-  margin-bottom: 10px;
-  padding: 10px;
-
-  width: 100%;
-  font-size: 16px;
-`;
-
-const Submit = styled.button`
-  display: block;
-  margin: 0 auto;
-  width: 110%;
-  padding: 10px;
-  border: 0;
-  border-radius: 5px;
-  outline: none;
-
-  background: #00e676;
-  transition: 0.2s all ease-in;
-  color: white;
-  font-size: 16px;
-
-  cursor: pointer;
-
-  &:disabled {
-    background: #43a047;
-  }
-`;
+import Input from '../src/components/Styled/Input';
+import Submit from '../src/components/Styled/Submit';
 
 const SignInPage = () => (
   <AppWithAuthentication>
