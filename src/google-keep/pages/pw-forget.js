@@ -7,6 +7,7 @@ import * as routes from '../src/constants/routes';
 import { auth } from '../src/firebase';
 import Input from '../src/components/Styled/Input';
 import Submit from '../src/components/Styled/Submit';
+import Container from '../src/components/Styled/Container';
 
 const ForgetSubmit = styled(Submit)`
   margin-bottom: 10px;
@@ -14,8 +15,10 @@ const ForgetSubmit = styled(Submit)`
 
 const PasswordForgetPage = () => (
   <AppWithAuthentication>
-    <h1>Password Forget</h1>
-    <PasswordForgetForm />
+    <Container>
+      <h1>Password Forget Form</h1>
+      <PasswordForgetForm />
+    </Container>
   </AppWithAuthentication>
 );
 

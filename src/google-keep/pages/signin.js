@@ -10,13 +10,16 @@ import * as routes from '../src/constants/routes';
 import Title from '../src/components/Styled/Title';
 import Input from '../src/components/Styled/Input';
 import Submit from '../src/components/Styled/Submit';
+import Container from '../src/components/Styled/Container';
 
 const SignInPage = () => (
   <AppWithAuthentication>
-    <Title>Sign In</Title>
-    <SignInForm />
-    <PasswordForgetLink />
-    <SignUpLink />
+    <Container>
+      <Title>Sign In</Title>
+      <SignInForm />
+      <PasswordForgetLink />
+      <SignUpLink />
+    </Container>
   </AppWithAuthentication>
 );
 

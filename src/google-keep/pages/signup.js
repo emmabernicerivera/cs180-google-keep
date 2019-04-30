@@ -9,11 +9,14 @@ import * as routes from '../src/constants/routes';
 import Title from '../src/components/Styled/Title';
 import Submit from '../src/components/Styled/Submit';
 import Input from '../src/components/Styled/Input';
+import Container from '../src/components/Styled/Container';
 
 const SignUpPage = () => (
   <AppWithAuthentication>
-    <Title>Sign Up</Title>
-    <SignUpForm />
+    <Container>
+      <Title>Sign Up</Title>
+      <SignUpForm />
+    </Container>
   </AppWithAuthentication>
 );
 

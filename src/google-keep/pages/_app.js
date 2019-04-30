@@ -9,6 +9,7 @@ import initStore from '../src/store';
 const theme = {
   grey: '#343434',
   lightgrey: '#cccccc',
+  lightblue: '#94DCF2',
 };
 
 const GlobalStyle = createGlobalStyle`
