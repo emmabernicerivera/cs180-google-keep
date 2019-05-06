@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import { AppWithAuthorization } from "../src/components/App";
 import { db } from "../src/firebase";
+import Note from '../src/components/NewNote';
 
 const fromObjectToList = object =>
   object
@@ -25,6 +26,7 @@ class HomePage extends Component {
       <AppWithAuthorization>
         <h1>Home</h1>
         <p>The Home Page is accessible by every signed in user.</p>
+        <Note></Note>
 
         {!!users.length && <UserList users={users} />}
       </AppWithAuthorization>
