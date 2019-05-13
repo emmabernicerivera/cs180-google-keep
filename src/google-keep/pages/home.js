@@ -3,7 +3,10 @@ import { connect } from "react-redux";
 
 import { AppWithAuthorization } from "../src/components/App";
 import { db } from "../src/firebase";
-import Note from '../src/components/NewNote';
+import Note, {Notes, Notebox} from '../src/components/NewNote';
+import styled from 'styled-components';
+
+
 
 const fromObjectToList = object =>
   object
@@ -26,13 +29,16 @@ class HomePage extends Component {
       <AppWithAuthorization>
         <h1>Home</h1>
         <p>The Home Page is accessible by every signed in user.</p>
-        <Note></Note>
+        <Notes></Notes>
 
         {!!users.length && <UserList users={users} />}
       </AppWithAuthorization>
     );
   }
 }
+
+
+
 
 const UserList = ({ users }) => (
   <div>
