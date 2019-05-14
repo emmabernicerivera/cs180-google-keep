@@ -12,6 +12,8 @@ const NoteBox = styled.span`
 	display: inline-block;
 	background: #f2e379;
 	word-wrap: break-word;
+	border: solid;
+	border-width:thin;
 	width: 200px;
 	padding: 15px;
 	margin-bottom: 10px;
@@ -21,8 +23,21 @@ const NoteBox = styled.span`
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
+	font-family: sans-serif;
+	font-size:16px;
 `;
-
+const Button = styled.span`
+border: outset;
+border-radius: 5px;
+padding:12px 12px;
+font-size: 16px;
+text-transform: uppercase;
+cursor: pointer;
+color: white;
+background-color: #2196f3;
+box-shadow: 0 0 4px #999;
+outline: none;
+`;
 export class Notes extends React.Component {
 	constructor(props){
 		super(props);
@@ -51,7 +66,7 @@ export class Notes extends React.Component {
 			);
 		});
 		return  (
-			<p>{list}<button onClick={this.addNote.bind(this)}> Add Note </button></p>     
+			<p>{list}<Button onClick={this.addNote.bind(this)}> Add Note </Button></p>     
 
 			);
 	}
@@ -95,10 +110,10 @@ class Note extends React.Component {
 		return (
 			<div>
 				{this.state.newNote && (
-					<button onClick={this.handleNewNote.bind(this)}>
+					<Button onClick={this.handleNewNote.bind(this)}>
 						{' '}
 						New Note{' '}
-					</button>
+					</Button>
 				)}
 
 				{this.state.editNote && (
@@ -110,10 +125,9 @@ class Note extends React.Component {
 				)}
 
 				{this.state.editNote && (
-					<button onClick={this.handleSave.bind(this)}>
-						{' '}
+					<Button onClick={this.handleSave.bind(this)}>	
 						Save Note{' '}
-					</button>
+					</Button>
 				)}
 				{this.state.displayNote && (
 					<NoteBox onClick={this.editNote.bind(this)}> {this.state.body} </NoteBox>
