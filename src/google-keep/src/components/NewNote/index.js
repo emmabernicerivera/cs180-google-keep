@@ -10,12 +10,17 @@ var b = Math.floor(Math.random() * 256);
 var bgColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 const NoteBox = styled.span`
 	display: inline-block;
-	border: 2px solid black;
-	border-radius: 1px;
-	padding: 1em;
-	background: ${bgColor};
-	max-width: 150px;
-	word-wrap: break-word	
+	background: #f2e379;
+	word-wrap: break-word;
+	width: 200px;
+	padding: 15px;
+	margin-bottom: 10px;
+	position: relative;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	transition: box-shadow 0.2s;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 `;
 
 export class Notes extends React.Component {
@@ -113,7 +118,7 @@ class Note extends React.Component {
 				{this.state.displayNote && (
 					<NoteBox onClick={this.editNote.bind(this)}> {this.state.body} </NoteBox>
 				)}
-
+			
 			</div>
 		);
 	}
