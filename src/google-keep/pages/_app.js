@@ -39,6 +39,10 @@ class EnhancedApp extends App {
     };
   }
 
+  // componentDidMount() {
+  //   firebase.auth.onAu
+  // }
+
   render() {
     const { Component, pageProps, store } = this.props;
     return (

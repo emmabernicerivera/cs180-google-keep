@@ -1,12 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import { AppWithAuthorization } from "../src/components/App";
-import { db } from "../src/firebase";
-import Note, {Notes, Notebox} from '../src/components/NewNote';
+import { AppWithAuthorization } from '../src/components/App';
+import { db } from '../src/firebase';
+import Note, { Notes, Notebox } from '../src/components/NewNote';
 import styled from 'styled-components';
-
-
 
 const fromObjectToList = object =>
   object
@@ -23,38 +21,28 @@ class HomePage extends Component {
   }
 
   render() {
-    const { users } = this.props;
+    const { authUser } = this.props;
+
+    if (authUser == null) {
+      return null;
+    }
 
     return (
       <AppWithAuthorization>
         <h1>Home</h1>
         <p>The Home Page is accessible by every signed in user.</p>
-        <Notes></Notes>
-
-        {!!users.length && <UserList users={users} />}
+        <Notes uid={authUser.uid} />
       </AppWithAuthorization>
     );
   }
 }
 
-
-
-
-const UserList = ({ users }) => (
-  <div>
-    <h2>List of App User IDs (Saved on Sign Up in Firebase Database)</h2>
-    {users.map(user => (
-      <div key={user.index}>{user.index}</div>
-    ))}
-  </div>
-);
-
 const mapStateToProps = state => ({
-  users: state.userState.users
+  authUser: state.sessionState.authUser,
 });
 
 const mapDispatchToProps = dispatch => ({
-  onSetUsers: users => dispatch({ type: "USERS_SET", users })
+  onSetUsers: users => dispatch({ type: 'USERS_SET', users }),
 });
 
 export default connect(
