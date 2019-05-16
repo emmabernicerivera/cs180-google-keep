@@ -51,11 +51,25 @@ export class Notes extends React.Component {
 
 	componentDidMount() {
 		db.onceGetNotes(this.props.uid).then(data => {
-			const notesData = Object.values(data.val());
-			const notes = notesData.map(note => note.note);
+			const noteSnap = data.val();
+			var notes = [];
+			if (noteSnap != null) {
+				
+				const keys = Object.keys(noteSnap);
+				
+				for (var i = 0; i < keys.length; ++i) {
+					var k = keys[i];
+					var note = noteSnap[k].note;
+					notes.push(note);
+				}
+			}
+
+			// const notesData = Object.values(data.val());
+			// const notes = notesData.map(note => note.note);
 			this.setState({ notes });
 		});
 	}
+
 
 	updateText = (index, body) => {
 		let copyArr = this.state.notes.slice();
@@ -63,12 +77,14 @@ export class Notes extends React.Component {
 		this.setState({ notes: copyArr });
 	};
 
+
 	addNote() {
 		this.setState({ notes: [...this.state.notes, ''] });
 	}
 
 	render() {
 		var list = this.state.notes.map((element, i) => {
+			
 			return (
 				<Note
 					uid={this.props.uid}
@@ -90,18 +106,25 @@ export class Notes extends React.Component {
 class Note extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			newNote: false,
-			editNote: true,
-			displayNote: false,
-			body: props.body || '',
-		};
+
+		if (props.body != '') {
+			this.state = {
+				newNote : false,
+				editNote: false,
+				displayNote: true,
+				body: props.body,
+			};
+		} else { 
+			this.state = {
+				newNote : true,
+				editNote: true,
+				displayNote: false,
+				body: props.body,
+			};
+		}
 	}
 
-	handleNewNote(event) {
-		this.setState({ newNote: false, editNote: true });
-		// event.preventDefault();
-	}
+
 
 	updateBody(event) {
 		this.setState({ body: event.target.value });
@@ -109,8 +132,21 @@ class Note extends React.Component {
 	}
 
 	handleSave(event) {
-		this.setState({ editNote: false, displayNote: true });
-		db.doCreateNote(this.props.uid, this.state.body);
+		
+		if (this.state.newNote){
+			this.setState({ newNote: false, editNote: false, displayNote: true});
+			db.doCreateNote(this.props.uid, this.state.body);
+		} else {
+			this.setState({ editNote: false, displayNote: true });
+			db.onceGetNotes(this.props.uid).then(data => {
+				var noteSnap = data.val();
+				const keys = Object.keys(noteSnap);
+				const noteKey = keys[this.props.index];
+				var update = {};
+				update['note'] = this.state.body;
+				db.updateNote(this.props.uid, noteKey, update);
+			});
+		}
 	}
 
 	editNote(event) {
@@ -120,12 +156,7 @@ class Note extends React.Component {
 	render() {
 		return (
 			<div>
-				{this.state.newNote && (
-					<Button onClick={this.handleNewNote.bind(this)}>
-						{' '}
-						New Note{' '}
-					</Button>
-				)}
+				
 
 				{this.state.editNote && (
 					<textarea
