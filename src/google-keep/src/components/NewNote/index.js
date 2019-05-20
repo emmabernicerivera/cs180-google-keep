@@ -12,10 +12,7 @@ import NoteContainer from '../Styled/NoteContainer';
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
 });
-var r = Math.floor(Math.random() * 256);
-var g = Math.floor(Math.random() * 256);
-var b = Math.floor(Math.random() * 256);
-var bgColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+
 const NoteBox = styled.div`
 	display: block;
 	background: ${props => props.background};
@@ -60,9 +57,10 @@ export class Notes extends React.Component {
 	constructor(props) {
 		super(props);
 		this.updateNote = this.updateNote.bind(this);
+		this.deleteNote = this.deleteNote.bind(this);
 	}
 
-	componentDidMount() {
+	fetchNotes = props => {
 		db.onceGetNotes(this.props.uid).then(data => {
 			var notes = Object.keys(data || {}).map(key => ({
 				...data[key],
@@ -71,6 +69,10 @@ export class Notes extends React.Component {
 
 			this.setState({ notes });
 		});
+	};
+
+	componentDidMount() {
+		this.fetchNotes();
 	}
 
 	updateNote = (index, note) => {
@@ -95,6 +97,12 @@ export class Notes extends React.Component {
 		});
 	}
 
+	deleteNote = index => {
+		let notes = this.state.notes;
+		notes.splice(index, 1);
+		this.setState({ notes });
+	};
+
 	render() {
 		var list = this.state.notes.map((note, i) => {
 			return (
@@ -103,6 +111,9 @@ export class Notes extends React.Component {
 					index={i}
 					{...note}
 					updateNote={this.updateNote}
+					deleteNote={this.deleteNote}
+					noteKey={note.key}
+					fetchNotes={this.fetchNotes}
 				/>
 			);
 		});
@@ -173,6 +184,12 @@ class Note extends React.Component {
 				db.updateNote(this.props.uid, noteKey, update);
 			});
 		}
+		this.props.fetchNotes();
+	}
+
+	handleDelete(event) {
+		this.props.deleteNote(this.props.index);
+		db.deleteNote(this.props.uid, this.props.noteKey);
 	}
 
 	editNote(event) {
@@ -205,7 +222,10 @@ class Note extends React.Component {
 							onChangeComplete={this.updateColor.bind(this)}
 						/>
 						<Button onClick={this.handleSave.bind(this)}>
-							Save Note
+							Save
+						</Button>
+						<Button onClick={this.handleDelete.bind(this)}>
+							Delete
 						</Button>
 					</div>
 				)}

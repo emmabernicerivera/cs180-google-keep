@@ -22,4 +22,7 @@ export const updateNote = (uid, noteKey, update) => {
 	db.ref(`notes/${uid}/${noteKey}/`).update(update);
 };
 
+export const deleteNote = (uid, noteKey) => {
+	db.ref(`notes/${uid}/${noteKey}/`).remove();
+};
 // Other db APIs ...
