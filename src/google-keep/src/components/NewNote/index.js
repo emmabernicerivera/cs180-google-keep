@@ -107,7 +107,7 @@ export class Notes extends React.Component {
 			);
 		});
 		return (
-			<div>
+			<div style={{ width: '100%', height: '65%' }}>
 				<Button onClick={this.addNote.bind(this)}> Add Note </Button>
 				<NoteContainer>{list}</NoteContainer>
 			</div>
