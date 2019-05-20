@@ -1,6 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import DatePicker from 'react-datepicker';
+
 import { db } from '../../firebase';
+import Submit from '../Styled/Submit';
+import Input from '../Styled/Input';
+import NoteContainer from '../Styled/NoteContainer';
+
+import './react-datepicker.min.css';
 
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
@@ -9,15 +16,16 @@ var r = Math.floor(Math.random() * 256);
 var g = Math.floor(Math.random() * 256);
 var b = Math.floor(Math.random() * 256);
 var bgColor = 'rgb(' + r + ',' + g + ',' + b + ')';
-const NoteBox = styled.span`
-	display: inline-block;
+const NoteBox = styled.div`
+	display: block;
 	background: #f2e379;
+	border-radius: 5px;
 	word-wrap: break-word;
+	margin: 8px;
 	border: solid;
 	border-width: thin;
 	width: 200px;
 	padding: 15px;
-	margin-bottom: 10px;
 	position: relative;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 	transition: box-shadow 0.2s;
@@ -27,17 +35,22 @@ const NoteBox = styled.span`
 	font-family: sans-serif;
 	font-size: 16px;
 `;
-const Button = styled.span`
-	border: outset;
+const Button = styled.div`
+	padding: 10px;
+	border: 2px solid ${({ theme }) => theme.lightgrey};
+	width: 70%;
+	margin: 0 auto;
 	border-radius: 5px;
-	padding: 12px 12px;
-	font-size: 16px;
-	text-transform: uppercase;
-	cursor: pointer;
-	color: white;
-	background-color: #2196f3;
-	box-shadow: 0 0 4px #999;
 	outline: none;
+	transition: 0.2s all ease-in;
+	color: ${({ theme }) => theme.grey};
+	font-size: 16px;
+
+	cursor: pointer;
+
+	&:disabled {
+		background: #43a047;
+	}
 `;
 export class Notes extends React.Component {
 	state = {
@@ -46,59 +59,57 @@ export class Notes extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.updateText = this.updateText.bind(this);
+		this.updateNote = this.updateNote.bind(this);
 	}
 
 	componentDidMount() {
 		db.onceGetNotes(this.props.uid).then(data => {
-			const noteSnap = data.val();
-			var notes = [];
-			if (noteSnap != null) {
-				
-				const keys = Object.keys(noteSnap);
-				
-				for (var i = 0; i < keys.length; ++i) {
-					var k = keys[i];
-					var note = noteSnap[k].note;
-					notes.push(note);
-				}
-			}
+			var notes = Object.keys(data || {}).map(key => ({
+				...data[key],
+				key,
+			}));
 
-			// const notesData = Object.values(data.val());
-			// const notes = notesData.map(note => note.note);
 			this.setState({ notes });
 		});
 	}
 
-
-	updateText = (index, body) => {
+	updateNote = (index, note) => {
 		let copyArr = this.state.notes.slice();
-		copyArr[index] = body;
+		copyArr[index] = {
+			...copyArr[index],
+			...note,
+		};
 		this.setState({ notes: copyArr });
 	};
 
-
 	addNote() {
-		this.setState({ notes: [...this.state.notes, ''] });
+		this.setState({
+			notes: [
+				...this.state.notes,
+				{
+					body: '',
+					dueDate: new Date().toISOString(),
+				},
+			],
+		});
 	}
 
 	render() {
-		var list = this.state.notes.map((element, i) => {
-			
+		var list = this.state.notes.map((note, i) => {
 			return (
 				<Note
 					uid={this.props.uid}
 					index={i}
-					body={element}
-					updateText={this.updateText}
+					{...note}
+					updateNote={this.updateNote}
 				/>
 			);
 		});
 		return (
-			<p>
-				{list}
+			<div>
 				<Button onClick={this.addNote.bind(this)}> Add Note </Button>
-			</p>
+				<NoteContainer>{list}</NoteContainer>
+			</div>
 		);
 	}
 }
@@ -107,43 +118,47 @@ class Note extends React.Component {
 	constructor(props) {
 		super(props);
 
-		if (props.body != '') {
-			this.state = {
-				newNote : false,
-				editNote: false,
-				displayNote: true,
-				body: props.body,
-			};
-		} else { 
-			this.state = {
-				newNote : true,
-				editNote: true,
-				displayNote: false,
-				body: props.body,
-			};
-		}
+		this.state = {
+			newNote: props.body == '',
+			editNote: props.body == '',
+			displayNote: props.body != '',
+			body: props.body,
+			dueDate: props.dueDate,
+		};
 	}
 
-
+	updateDueDate(dueDate) {
+		this.setState({ dueDate: dueDate.toISOString() });
+		this.props.updateNote(this.props.index, {
+			dueDate: dueDate.toISOString(),
+		});
+	}
 
 	updateBody(event) {
 		this.setState({ body: event.target.value });
-		this.props.updateText(this.props.index, event.target.value);
+		this.props.updateNote(this.props.index, { body: event.target.value });
 	}
 
 	handleSave(event) {
-		
-		if (this.state.newNote){
-			this.setState({ newNote: false, editNote: false, displayNote: true});
-			db.doCreateNote(this.props.uid, this.state.body);
+		if (this.state.newNote) {
+			this.setState({
+				newNote: false,
+				editNote: false,
+				displayNote: true,
+			});
+			db.doCreateNote(this.props.uid, {
+				body: this.state.body,
+				dueDate: this.state.dueDate,
+			});
 		} else {
 			this.setState({ editNote: false, displayNote: true });
 			db.onceGetNotes(this.props.uid).then(data => {
-				var noteSnap = data.val();
-				const keys = Object.keys(noteSnap);
+				const keys = Object.keys(data);
 				const noteKey = keys[this.props.index];
-				var update = {};
-				update['note'] = this.state.body;
+				var update = {
+					body: this.state.body,
+					dueDate: this.state.dueDate,
+				};
 				db.updateNote(this.props.uid, noteKey, update);
 			});
 		}
@@ -156,25 +171,31 @@ class Note extends React.Component {
 	render() {
 		return (
 			<div>
-				
-
 				{this.state.editNote && (
-					<textarea
-						type="text"
-						value={this.state.body}
-						onChange={this.updateBody.bind(this)}
-					/>
-				)}
-
-				{this.state.editNote && (
-					<Button onClick={this.handleSave.bind(this)}>
-						Save Note{' '}
-					</Button>
+					<div>
+						<Input
+							type="text"
+							value={this.state.body}
+							onChange={this.updateBody.bind(this)}
+						/>
+						<DatePicker
+							selected={new Date(this.state.dueDate)}
+							onChange={this.updateDueDate.bind(this)}
+							showTimeSelect
+							timeFormat="HH:mm"
+							timeIntervals={15}
+							dateFormat="MMMM d, yyyy h:mm aa"
+							timeCaption="time"
+						/>
+						<Button onClick={this.handleSave.bind(this)}>
+							Save Note{' '}
+						</Button>
+					</div>
 				)}
 				{this.state.displayNote && (
 					<NoteBox onClick={this.editNote.bind(this)}>
-						{' '}
-						{this.state.body}{' '}
+						<p>{this.state.body}</p>
+						<small> {this.state.dueDate} </small>
 					</NoteBox>
 				)}
 			</div>

@@ -29,8 +29,6 @@ class HomePage extends Component {
 
     return (
       <AppWithAuthorization>
-        <h1>Home</h1>
-        <p>The Home Page is accessible by every signed in user.</p>
         <Notes uid={authUser.uid} />
       </AppWithAuthorization>
     );
