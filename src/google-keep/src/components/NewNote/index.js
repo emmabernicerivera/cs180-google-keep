@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
+import { CirclePicker } from 'react-color';
 
 import { db } from '../../firebase';
 import Submit from '../Styled/Submit';
@@ -17,7 +18,7 @@ var b = Math.floor(Math.random() * 256);
 var bgColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 const NoteBox = styled.div`
 	display: block;
-	background: #f2e379;
+	background: ${props => props.background};
 	border-radius: 5px;
 	word-wrap: break-word;
 	margin: 8px;
@@ -88,6 +89,7 @@ export class Notes extends React.Component {
 				{
 					body: '',
 					dueDate: new Date().toISOString(),
+					color: '#ffeb3b',
 				},
 			],
 		});
@@ -123,13 +125,21 @@ class Note extends React.Component {
 			displayNote: props.body != '',
 			body: props.body,
 			dueDate: props.dueDate,
+			color: props.color,
 		};
 	}
 
+	updateColor(color) {
+		this.setState({ color: color.hex });
+		this.props.updateNote(this.props.index, { color: color.hex });
+	}
+
 	updateDueDate(dueDate) {
-		this.setState({ dueDate: dueDate.toISOString() });
+		this.setState({
+			dueDate: dueDate && dueDate.toISOString(),
+		});
 		this.props.updateNote(this.props.index, {
-			dueDate: dueDate.toISOString(),
+			dueDate: dueDate && dueDate.toISOString(),
 		});
 	}
 
@@ -148,6 +158,7 @@ class Note extends React.Component {
 			db.doCreateNote(this.props.uid, {
 				body: this.state.body,
 				dueDate: this.state.dueDate,
+				color: this.state.color,
 			});
 		} else {
 			this.setState({ editNote: false, displayNote: true });
@@ -157,6 +168,7 @@ class Note extends React.Component {
 				var update = {
 					body: this.state.body,
 					dueDate: this.state.dueDate,
+					color: this.state.color,
 				};
 				db.updateNote(this.props.uid, noteKey, update);
 			});
@@ -189,13 +201,19 @@ class Note extends React.Component {
 							dateFormat="MMMM d, yyyy h:mm aa"
 							timeCaption="time"
 						/>
+						<CirclePicker
+							onChangeComplete={this.updateColor.bind(this)}
+						/>
 						<Button onClick={this.handleSave.bind(this)}>
 							Save Note
 						</Button>
 					</div>
 				)}
 				{this.state.displayNote && (
-					<NoteBox onClick={this.editNote.bind(this)}>
+					<NoteBox
+						onClick={this.editNote.bind(this)}
+						background={this.state.color}
+					>
 						<p>{this.state.body}</p>
 						{this.state.dueDate && (
 							<small>
