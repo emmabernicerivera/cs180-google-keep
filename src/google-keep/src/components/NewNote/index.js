@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
+import { format } from 'date-fns';
 
 import { db } from '../../firebase';
 import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
 import NoteContainer from '../Styled/NoteContainer';
-
-import './react-datepicker.min.css';
 
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
@@ -179,7 +178,10 @@ class Note extends React.Component {
 							onChange={this.updateBody.bind(this)}
 						/>
 						<DatePicker
-							selected={new Date(this.state.dueDate)}
+							selected={
+								this.state.dueDate &&
+								new Date(this.state.dueDate)
+							}
 							onChange={this.updateDueDate.bind(this)}
 							showTimeSelect
 							timeFormat="HH:mm"
@@ -188,14 +190,21 @@ class Note extends React.Component {
 							timeCaption="time"
 						/>
 						<Button onClick={this.handleSave.bind(this)}>
-							Save Note{' '}
+							Save Note
 						</Button>
 					</div>
 				)}
 				{this.state.displayNote && (
 					<NoteBox onClick={this.editNote.bind(this)}>
 						<p>{this.state.body}</p>
-						<small> {this.state.dueDate} </small>
+						{this.state.dueDate && (
+							<small>
+								{format(
+									new Date(this.state.dueDate),
+									'MMMM D, YYYY h:mm aa'
+								)}
+							</small>
+						)}
 					</NoteBox>
 				)}
 			</div>

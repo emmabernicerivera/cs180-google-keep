@@ -13,6 +13,7 @@ const theme = {
 };
 
 const GlobalStyle = createGlobalStyle`
+  @import url('/static/react-datepicker.min.css');
   html {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
