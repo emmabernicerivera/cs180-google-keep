@@ -1,17 +1,17 @@
-import * as firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/messaging';
+
 import firebaseConfig from '../config/firebase';
 
-const config = {
-  apiKey: firebaseConfig.apiKey,
-  authDomain: firebaseConfig.authDomain,
-  databaseURL: firebaseConfig.databaseURL,
-  projectId: firebaseConfig.projectId,
-  storageBucket: firebaseConfig.storageBucket,
-  messagingSenderId: firebaseConfig.messagingSenderId,
-};
-
 if (!firebase.apps.length) {
-  firebase.initializeApp(config);
+	firebase.initializeApp(firebaseConfig);
+	navigator.serviceWorker
+		.register('./service-worker.js')
+		.then(registration => {
+			firebase.messaging().useServiceWorker(registration);
+		});
 }
 
 const db = firebase.database();
