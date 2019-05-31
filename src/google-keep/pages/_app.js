@@ -3,6 +3,8 @@ import App, { Container } from 'next/app';
 import { Provider } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import firebase from 'firebase/app';
+import 'firebase/messaging';
 
 import initStore from '../src/store';
 
@@ -40,9 +42,16 @@ class EnhancedApp extends App {
     };
   }
 
-  // componentDidMount() {
-  //   firebase.auth.onAu
-  // }
+  componentDidMount() {
+    navigator.serviceWorker
+      .register('/static/service-worker.js')
+      .then(registration => {
+        firebase.messaging().useServiceWorker(registration);
+        firebase.messaging().onMessage(function(payload) {
+          registration.showNotification('Google Keep', payload.notification);
+        });
+      });
+  }
 
   render() {
     const { Component, pageProps, store } = this.props;
