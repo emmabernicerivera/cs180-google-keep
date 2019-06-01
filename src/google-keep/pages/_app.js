@@ -31,8 +31,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// This is causing the ERROR FIXME EMMA --> margin: 0
-
 class EnhancedApp extends App {
   static async getInitialProps({ Component, ctx }) {
     return {

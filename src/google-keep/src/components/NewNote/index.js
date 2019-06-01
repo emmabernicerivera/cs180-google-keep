@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
 import { CirclePicker } from 'react-color';
 
-import { db } from '../../firebase';
+import { db, messenger } from '../../firebase';
 import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
 import NoteContainer from '../Styled/NoteContainer';
@@ -184,6 +184,12 @@ class Note extends React.Component {
 				db.updateNote(this.props.uid, noteKey, update);
 			});
 		}
+		messenger.doSendMessage(
+			`Your note is due at: ${format(
+				new Date(this.state.dueDate),
+				'MMMM D, YYYY h:mm aa'
+			)}`
+		);
 		this.props.fetchNotes();
 	}
 

@@ -1,17 +1,13 @@
-import firebase from 'firebase/app';
+// import firebase from 'firebase/app';
 
-import { messenger } from '../firebase';
+// import { messenger } from '../firebase';
 
-export const askForPermissionToReceiveNotifications = async () => {
-	try {
-		const messaging = firebase.messaging();
-		await messaging.requestPermission();
-		const token = await messaging.getToken();
+// export const askForPermissionToReceiveNotifications = async () => {
+// 	try {
+// 		messenger.doSendMessage('Hello World!');
 
-		messenger.doSendMessage('Hello World!');
-
-		return token;
-	} catch (error) {
-		console.error(error);
-	}
-};
+// 		return token;
+// 	} catch (error) {
+// 		console.error(error);
+// 	}
+// };
