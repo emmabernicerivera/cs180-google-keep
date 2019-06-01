@@ -49,6 +49,11 @@ const Button = styled.div`
 		background: #43a047;
 	}
 `;
+
+const ListItem = styled.li`
+	text-decoration: ${props => (props.checked ? 'line-through' : 'none')};
+`;
+
 export class Notes extends React.Component {
 	state = {
 		notes: [],
@@ -92,6 +97,7 @@ export class Notes extends React.Component {
 					body: '',
 					dueDate: new Date().toISOString(),
 					color: '#ffeb3b',
+					checklist: [],
 				},
 			],
 		});
@@ -137,6 +143,7 @@ class Note extends React.Component {
 			body: props.body,
 			dueDate: props.dueDate,
 			color: props.color,
+			checklist: props.checklist,
 		};
 	}
 
@@ -152,6 +159,24 @@ class Note extends React.Component {
 		this.props.updateNote(this.props.index, {
 			dueDate: dueDate && dueDate.toISOString(),
 		});
+	}
+
+	addChecklistItem() {
+		this.setState({
+			checklist: [
+				...this.state.checklist,
+				{
+					checked: false,
+					text: '',
+				},
+			],
+		});
+	}
+
+	updateCheckListItem(listItem, index) {
+		const checklist = this.state.checklist;
+		checklist[index] = listItem;
+		this.setState({ checklist });
 	}
 
 	updateBody(event) {
@@ -170,6 +195,7 @@ class Note extends React.Component {
 				body: this.state.body,
 				dueDate: this.state.dueDate,
 				color: this.state.color,
+				checklist: this.state.checklist,
 			});
 		} else {
 			this.setState({ editNote: false, displayNote: true });
@@ -180,6 +206,7 @@ class Note extends React.Component {
 					body: this.state.body,
 					dueDate: this.state.dueDate,
 					color: this.state.color,
+					checklist: this.state.checklist,
 				};
 				db.updateNote(this.props.uid, noteKey, update);
 			});
@@ -212,6 +239,42 @@ class Note extends React.Component {
 							value={this.state.body}
 							onChange={this.updateBody.bind(this)}
 						/>
+						{this.state.checklist.map((listItem, index) => {
+							return (
+								<div>
+									<input
+										type="checkbox"
+										checked={listItem.checked}
+										onChange={event => {
+											this.updateCheckListItem(
+												{
+													...listItem,
+													checked:
+														event.target.checked,
+												},
+												index
+											);
+										}}
+									/>
+									<label>
+										<input
+											type="text"
+											value={listItem.text}
+											onChange={event => {
+												this.updateCheckListItem(
+													{
+														...listItem,
+														text:
+															event.target.value,
+													},
+													index
+												);
+											}}
+										/>
+									</label>
+								</div>
+							);
+						})}
 						<DatePicker
 							selected={
 								this.state.dueDate &&
@@ -227,6 +290,9 @@ class Note extends React.Component {
 						<CirclePicker
 							onChangeComplete={this.updateColor.bind(this)}
 						/>
+						<Button onClick={this.addChecklistItem.bind(this)}>
+							Add Checklist Item
+						</Button>
 						<Button onClick={this.handleSave.bind(this)}>
 							Save
 						</Button>
@@ -241,6 +307,15 @@ class Note extends React.Component {
 						background={this.state.color}
 					>
 						<p>{this.state.body}</p>
+						<ul>
+							{this.state.checklist.map(listItem => {
+								return (
+									<ListItem checked={listItem.checked}>
+										{listItem.text}
+									</ListItem>
+								);
+							})}
+						</ul>
 						{this.state.dueDate && (
 							<small>
 								{format(
