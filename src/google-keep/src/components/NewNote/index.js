@@ -1,12 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
+import Popup from 'reactjs-popup';
 import { format } from 'date-fns';
 import { CirclePicker } from 'react-color';
 
-import { db } from '../../firebase';
+import { db, messenger } from '../../firebase';
 import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
+import Title from '../Styled/Title';
 import NoteContainer from '../Styled/NoteContainer';
 
 const updateByPropertyName = (propertyName, value) => () => ({
@@ -49,6 +51,11 @@ const Button = styled.div`
 		background: #43a047;
 	}
 `;
+
+const ListItem = styled.li`
+	text-decoration: ${props => (props.checked ? 'line-through' : 'none')};
+`;
+
 export class Notes extends React.Component {
 	state = {
 		notes: [],
@@ -60,13 +67,8 @@ export class Notes extends React.Component {
 		this.deleteNote = this.deleteNote.bind(this);
 	}
 
-	fetchNotes = props => {
-		db.onceGetNotes(this.props.uid).then(data => {
-			var notes = Object.keys(data || {}).map(key => ({
-				...data[key],
-				key,
-			}));
-
+	fetchNotes = () => {
+		db.onceGetNotes(this.props.uid, this.props.email).then(notes => {
 			this.setState({ notes });
 		});
 	};
@@ -92,6 +94,8 @@ export class Notes extends React.Component {
 					body: '',
 					dueDate: new Date().toISOString(),
 					color: '#ffeb3b',
+					checklist: [],
+					users: [],
 				},
 			],
 		});
@@ -129,6 +133,9 @@ export class Notes extends React.Component {
 class Note extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = { open: false };
+		this.openModal = this.openModal.bind(this);
+		this.closeModal = this.closeModal.bind(this);
 
 		this.state = {
 			newNote: props.body == '',
@@ -137,7 +144,16 @@ class Note extends React.Component {
 			body: props.body,
 			dueDate: props.dueDate,
 			color: props.color,
+			checklist: props.checklist || [],
+			users: props.users || [],
 		};
+	}
+
+	openModal() {
+		this.setState({ open: true });
+	}
+	closeModal() {
+		this.setState({ open: false });
 	}
 
 	updateColor(color) {
@@ -152,6 +168,36 @@ class Note extends React.Component {
 		this.props.updateNote(this.props.index, {
 			dueDate: dueDate && dueDate.toISOString(),
 		});
+	}
+
+	addUser() {
+		this.setState({
+			users: [...this.state.users, ''],
+		});
+	}
+
+	updateUser(event) {
+		const userList = this.state.users;
+		userList[userList.length - 1] = event.target.value;
+		this.setState({ users: userList });
+	}
+
+	addChecklistItem() {
+		this.setState({
+			checklist: [
+				...this.state.checklist,
+				{
+					checked: false,
+					text: '',
+				},
+			],
+		});
+	}
+
+	updateCheckListItem(listItem, index) {
+		const checklist = this.state.checklist;
+		checklist[index] = listItem;
+		this.setState({ checklist });
 	}
 
 	updateBody(event) {
@@ -170,20 +216,26 @@ class Note extends React.Component {
 				body: this.state.body,
 				dueDate: this.state.dueDate,
 				color: this.state.color,
+				checklist: this.state.checklist || [],
+				users: this.state.users || [],
 			});
 		} else {
 			this.setState({ editNote: false, displayNote: true });
-			db.onceGetNotes(this.props.uid).then(data => {
-				const keys = Object.keys(data);
-				const noteKey = keys[this.props.index];
-				var update = {
-					body: this.state.body,
-					dueDate: this.state.dueDate,
-					color: this.state.color,
-				};
-				db.updateNote(this.props.uid, noteKey, update);
-			});
+			const update = {
+				body: this.state.body,
+				dueDate: this.state.dueDate,
+				color: this.state.color,
+				checklist: this.state.checklist || [],
+				users: this.state.users || [],
+			};
+			db.updateNote(this.props.uid, this.props.noteKey, update);
 		}
+		messenger.doSendMessage(
+			`Your note is due at: ${format(
+				new Date(this.state.dueDate),
+				'MMMM D, YYYY h:mm aa'
+			)}`
+		);
 		this.props.fetchNotes();
 	}
 
@@ -206,6 +258,45 @@ class Note extends React.Component {
 							value={this.state.body}
 							onChange={this.updateBody.bind(this)}
 						/>
+						{this.state.checklist &&
+							this.state.checklist.map((listItem, index) => {
+								return (
+									<div>
+										<input
+											type="checkbox"
+											checked={listItem.checked}
+											onChange={event => {
+												this.updateCheckListItem(
+													{
+														...listItem,
+														checked:
+															event.target
+																.checked,
+													},
+													index
+												);
+											}}
+										/>
+										<label>
+											<input
+												type="text"
+												value={listItem.text}
+												onChange={event => {
+													this.updateCheckListItem(
+														{
+															...listItem,
+															text:
+																event.target
+																	.value,
+														},
+														index
+													);
+												}}
+											/>
+										</label>
+									</div>
+								);
+							})}
 						<DatePicker
 							selected={
 								this.state.dueDate &&
@@ -221,6 +312,53 @@ class Note extends React.Component {
 						<CirclePicker
 							onChangeComplete={this.updateColor.bind(this)}
 						/>
+						<Button onClick={this.addChecklistItem.bind(this)}>
+							Add Checklist Item
+						</Button>
+						<Button
+							onClick={() => {
+								this.openModal();
+								this.addUser();
+							}}
+						>
+							Add User
+						</Button>
+						<Popup
+							open={this.state.open}
+							closeOnDocumentClick
+							onClose={this.closeModal}
+						>
+							<div className="modal">
+								<a className="close" onClick={this.closeModal}>
+									&times;
+								</a>
+								<Title> Add User </Title>
+								<p> Enter users email: </p>
+								<input
+									type="text"
+									value={
+										this.state.users[
+											this.state.users.length - 1
+										]
+									}
+									onChange={this.updateUser.bind(this)}
+								/>
+								<button
+									onClick={() => {
+										this.closeModal();
+										messenger.doSendMessage(
+											`Shared note with ${
+												this.state.users[
+													this.state.users.length - 1
+												]
+											}!`
+										);
+									}}
+								>
+									Save
+								</button>
+							</div>
+						</Popup>
 						<Button onClick={this.handleSave.bind(this)}>
 							Save
 						</Button>
@@ -235,6 +373,16 @@ class Note extends React.Component {
 						background={this.state.color}
 					>
 						<p>{this.state.body}</p>
+						<ul>
+							{this.state.checklist &&
+								this.state.checklist.map(listItem => {
+									return (
+										<ListItem checked={listItem.checked}>
+											{listItem.text}
+										</ListItem>
+									);
+								})}
+						</ul>
 						{this.state.dueDate && (
 							<small>
 								{format(
