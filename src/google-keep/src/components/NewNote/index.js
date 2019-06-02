@@ -147,8 +147,6 @@ class Note extends React.Component {
 			color: props.color,
 			checklist: props.checklist || [],
 			users: props.users || [],
-			x: props.x,
-			y: props.y,
 		};
 	}
 
