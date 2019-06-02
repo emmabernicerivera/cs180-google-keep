@@ -10,6 +10,7 @@ import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
 import Title from '../Styled/Title';
 import NoteContainer from '../Styled/NoteContainer';
+import Draggable, {DraggableCore} from 'react-draggable';
 
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
@@ -146,6 +147,8 @@ class Note extends React.Component {
 			color: props.color,
 			checklist: props.checklist || [],
 			users: props.users || [],
+			x: props.x,
+			y: props.y,
 		};
 	}
 
@@ -248,10 +251,13 @@ class Note extends React.Component {
 		this.setState({ editNote: true, displayNote: false });
 	}
 
+
 	render() {
 		return (
+			
 			<div>
 				{this.state.editNote && (
+					<Draggable> 
 					<div>
 						<Input
 							type="text"
@@ -366,10 +372,13 @@ class Note extends React.Component {
 							Delete
 						</Button>
 					</div>
+					</Draggable>
+					
 				)}
 				{this.state.displayNote && (
+					<Draggable>
 					<NoteBox
-						onClick={this.editNote.bind(this)}
+						onDoubleClick={this.editNote.bind(this)}
 						background={this.state.color}
 					>
 						<p>{this.state.body}</p>
@@ -392,6 +401,7 @@ class Note extends React.Component {
 							</small>
 						)}
 					</NoteBox>
+					</Draggable>
 				)}
 			</div>
 		);
