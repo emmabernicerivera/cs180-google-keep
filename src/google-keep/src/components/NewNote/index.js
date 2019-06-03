@@ -10,7 +10,9 @@ import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
 import Title from '../Styled/Title';
 import NoteContainer from '../Styled/NoteContainer';
-import Draggable, {DraggableCore} from 'react-draggable';
+import Draggable from '../Styled/Draggable';
+
+
 
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
@@ -254,8 +256,9 @@ class Note extends React.Component {
 		return (
 			
 			<div>
+				
 				{this.state.editNote && (
-					<Draggable> 
+					
 					<div>
 						<Input
 							type="text"
@@ -370,7 +373,7 @@ class Note extends React.Component {
 							Delete
 						</Button>
 					</div>
-					</Draggable>
+					
 					
 				)}
 				{this.state.displayNote && (
