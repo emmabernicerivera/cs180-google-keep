@@ -29,7 +29,7 @@ class HomePage extends Component {
 
     return (
       <AppWithAuthorization>
-        <Notes uid={authUser.uid} />
+        <Notes uid={authUser.uid} email={authUser.email} />
       </AppWithAuthorization>
     );
   }

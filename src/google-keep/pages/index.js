@@ -12,10 +12,6 @@ const LandingPage = () => (
 		<Container>
 			<Title>Google Keep</Title>
 			<p>Welcome!</p>
-			<button onClick={askForPermissionToReceiveNotifications}>
-				{' '}
-				Click for Notification{' '}
-			</button>
 		</Container>
 	</AppWithAuthentication>
 );
