@@ -5,11 +5,14 @@ import Popup from 'reactjs-popup';
 import { format } from 'date-fns';
 import { CirclePicker } from 'react-color';
 
-import { db, messenger } from '../../firebase';
+import { db, messenger, storage } from '../../firebase';
 import Submit from '../Styled/Submit';
 import Input from '../Styled/Input';
 import Title from '../Styled/Title';
 import NoteContainer from '../Styled/NoteContainer';
+import Draggable from '../Styled/Draggable';
+
+
 
 const updateByPropertyName = (propertyName, value) => () => ({
 	[propertyName]: value,
@@ -50,6 +53,29 @@ const Button = styled.div`
 	&:disabled {
 		background: #43a047;
 	}
+`;
+
+const Upload = styled.input`
+	padding: 10px;
+	border: 2px solid ${({ theme }) => theme.lightgrey};
+	width: 70%;
+	margin: 0 auto;
+	border-radius: 5px;
+	outline: none;
+	transition: 0.2s all ease-in;
+	color: ${({ theme }) => theme.grey};
+	font-size: 16px;
+
+	cursor: pointer;
+
+	&:disabled {
+		background: #43a047;
+	}
+`;
+
+const Media = styled.img`
+	max-width: 100%;
+	max-height: 100%;
 `;
 
 const ListItem = styled.li`
@@ -136,6 +162,11 @@ class Note extends React.Component {
 		this.state = { open: false };
 		this.openModal = this.openModal.bind(this);
 		this.closeModal = this.closeModal.bind(this);
+		this.handleUpload = this.handleUpload.bind(this);
+		this.handleMediaDelete = this.handleMediaDelete.bind(this);
+		this.setRef = ref => {
+			this.file = ref;
+		}
 
 		this.state = {
 			newNote: props.body == '',
@@ -146,6 +177,7 @@ class Note extends React.Component {
 			color: props.color,
 			checklist: props.checklist || [],
 			users: props.users || [],
+			url: props.url || "",
 		};
 	}
 
@@ -218,6 +250,7 @@ class Note extends React.Component {
 				color: this.state.color,
 				checklist: this.state.checklist || [],
 				users: this.state.users || [],
+				url: this.state.url,
 			});
 		} else {
 			this.setState({ editNote: false, displayNote: true });
@@ -227,6 +260,7 @@ class Note extends React.Component {
 				color: this.state.color,
 				checklist: this.state.checklist || [],
 				users: this.state.users || [],
+				url: this.state.url,
 			};
 			db.updateNote(this.props.uid, this.props.noteKey, update);
 		}
@@ -244,14 +278,37 @@ class Note extends React.Component {
 		db.deleteNote(this.props.uid, this.props.noteKey);
 	}
 
+
+	handleUpload() {
+		const file = this.file.files[0];
+		if (file == undefined) return;
+		var urlPr = storage.uploadMedia(this.props.uid, this.props.noteKey, file);
+		console.log(urlPr);
+		urlPr.then(img => {
+			console.log(img);
+			this.setState({url: img});
+		})
+	
+	}
+
+	handleMediaDelete() {
+		var toDelete = this.state.url;
+		storage.deleteMedia(toDelete);
+		this.setState({url: ""});
+	}
+
 	editNote(event) {
 		this.setState({ editNote: true, displayNote: false });
 	}
 
+
 	render() {
 		return (
+			
 			<div>
+				
 				{this.state.editNote && (
+					
 					<div>
 						<Input
 							type="text"
@@ -359,6 +416,11 @@ class Note extends React.Component {
 								</button>
 							</div>
 						</Popup>
+
+						{this.state.url.length == 0 && <Upload type="file" ref={this.setRef}/>}
+						{this.state.url.length == 0 && <Button onClick={this.handleUpload}>Upload</Button>}
+						{this.state.url.length > 0 && <Button onClick={this.handleMediaDelete.bind(this)}>Delete Media</Button>}
+
 						<Button onClick={this.handleSave.bind(this)}>
 							Save
 						</Button>
@@ -366,12 +428,16 @@ class Note extends React.Component {
 							Delete
 						</Button>
 					</div>
+					
+					
 				)}
 				{this.state.displayNote && (
+					<Draggable>
 					<NoteBox
-						onClick={this.editNote.bind(this)}
+						onDoubleClick={this.editNote.bind(this)}
 						background={this.state.color}
 					>
+						{this.state.url.length > 0 && <Media src={this.state.url}/>}
 						<p>{this.state.body}</p>
 						<ul>
 							{this.state.checklist &&
@@ -392,6 +458,7 @@ class Note extends React.Component {
 							</small>
 						)}
 					</NoteBox>
+					</Draggable>
 				)}
 			</div>
 		);
